@@ -9,11 +9,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { sendCommand, bridgeAddress } from "./lib/bridge.js";
-
-const server = new McpServer({
-  name: "autonav-navisworks",
-  version: "1.0.0",
-});
+import { startHttpServer } from "./lib/http.js";
 
 const CLASH_STATUSES = ["New", "Active", "Reviewed", "Approved", "Resolved"];
 
@@ -27,17 +23,21 @@ function asError(error) {
     isError: true,
   };
 }
-
-function tool(name, description, shape, handler) {
-  server.registerTool(name, { description, inputSchema: shape }, async (args) => {
-    try {
-      return asText(await handler(args ?? {}));
-    } catch (error) {
-      return asError(error);
-    }
+export function buildServer() {
+  const server = new McpServer({
+    name: "autonav-navisworks",
+    version: "1.0.0",
   });
-}
 
+  function tool(name, description, shape, handler) {
+    server.registerTool(name, { description, inputSchema: shape }, async (args) => {
+      try {
+        return asText(await handler(args ?? {}));
+      } catch (error) {
+        return asError(error);
+      }
+    });
+  }
 // ── Status / document ──────────────────────────────────────────────
 
 tool(
@@ -215,6 +215,25 @@ tool(
 
 // ── Startup ────────────────────────────────────────────────────────
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
-console.error(`AutoNAV MCP server ready (bridge target ${bridgeAddress()}).`);
+// Default transport is stdio (Claude Desktop / Claude Code / VS Code
+// GitHub Copilot). Pass --http [port] or set AUTONAV_MCP_HTTP_PORT to
+// serve streamable HTTP instead (required for Microsoft Copilot Studio;
+// see docs/COPILOT.md).
+const httpFlagIndex = process.argv.indexOf("--http");
+const httpPort =
+  httpFlagIndex >= 0
+    ? Number(process.argv[httpFlagIndex + 1] || 3711)
+    : process.env.AUTONAV_MCP_HTTP_PORT
+      ? Number(process.env.AUTONAV_MCP_HTTP_PORT)
+      : null;
+
+if (httpPort) {
+  await startHttpServer(buildServer, httpPort);
+  console.error(
+    `AutoNAV MCP server listening on http://127.0.0.1:${httpPort}/mcp (bridge target ${bridgeAddress()}).`
+  );
+} else {
+  const transport = new StdioServerTransport();
+  await buildServer().connect(transport);
+  console.error(`AutoNAV MCP server ready (bridge target ${bridgeAddress()}).`);
+}
