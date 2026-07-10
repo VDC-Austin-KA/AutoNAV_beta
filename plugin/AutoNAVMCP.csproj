@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  AutoNAV MCP bridge plugin.
+
+  SDK-style project that builds against the Speckle.Navisworks.API NuGet
+  packages, so a per-Navisworks-year DLL can be produced on any machine
+  (including CI) without a local Navisworks install — same pattern as
+  AutoNAV2's AutoNAV.CI.csproj.
+
+  Build invocation (per Navisworks year):
+
+    dotnet build plugin/AutoNAVMCP.csproj -c Release -p:Platform=x64 \
+        -p:NWYear=2026 -p:NWPackageVersion=2026.0.1
+
+  Supported NWYear / NWPackageVersion pairs:
+    2024 -> 2024.0.0
+    2025 -> 2025.0.0
+    2026 -> 2026.0.1
+    2027 -> 2027.0.0
+
+  NWYear maps to a NW<year> DefineConstants symbol so ClashCompat.cs can
+  branch at compile time over Clash API differences.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>AutoNAVMCP</AssemblyName>
+    <RootNamespace>AutoNAVMCP</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>true</Deterministic>
+    <LangVersion>7.3</LangVersion>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Defaults; CI overrides via -p: -->
+    <NWYear Condition="'$(NWYear)' == ''">2026</NWYear>
+    <NWPackageVersion Condition="'$(NWPackageVersion)' == ''">2026.0.1</NWPackageVersion>
+
+    <DefineConstants>$(DefineConstants);NW$(NWYear)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin/**;obj/**" />
+    <None Remove="bin/**;obj/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Framework assemblies used by the bridge (WinForms only for
+         main-thread marshalling + message boxes; no WPF). -->
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Speckle.Navisworks.API" Version="$(NWPackageVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+</Project>

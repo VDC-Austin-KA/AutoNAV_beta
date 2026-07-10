@@ -1,0 +1,26 @@
+# Build outputs
+plugin/bin/
+plugin/obj/
+
+# Node
+mcp-server/node_modules/
+npm-debug.log*
+
+# Archives
+*.zip
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+
+# Rider / JetBrains
+.idea/
+
+# Claude Code project settings
+.claude/
+
+# OS
+Thumbs.db
+desktop.ini
