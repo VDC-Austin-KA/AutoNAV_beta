@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  plugin:
+    name: Plugin (Navisworks ${{ matrix.year }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { year: 2024, package: 2024.0.0 }
+          - { year: 2025, package: 2025.0.0 }
+          - { year: 2026, package: 2026.0.1 }
+          - { year: 2027, package: 2027.0.0 }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Build
+        run: >
+          dotnet build plugin/AutoNAVMCP.csproj -c Release -p:Platform=x64
+          -p:NWYear=${{ matrix.year }} -p:NWPackageVersion=${{ matrix.package }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoNAVMCP-${{ matrix.year }}
+          path: plugin/bin/x64/Release/net48/AutoNAVMCP.dll
+
+  mcp-server:
+    name: MCP server tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        working-directory: mcp-server
+        run: npm install
+      - name: Smoke test
+        working-directory: mcp-server
+        run: npm test

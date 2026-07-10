@@ -1,0 +1,24 @@
+{
+  "name": "autonav-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server exposing Autodesk Navisworks Manage clash coordination (identification, assignment, resolution, reporting) to AI clients via the AutoNAV MCP bridge plugin.",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "autonav-mcp": "index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test/smoke.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "author": "Keith Acker",
+  "license": "UNLICENSED",
+  "private": true
+}
