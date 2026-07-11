@@ -105,11 +105,33 @@ See **[docs/COPILOT.md](docs/COPILOT.md)** for a step-by-step walkthrough of con
 | `group_clashes` | Regroup a test by status, assignee, level, nearest grid intersection, or item. |
 | `create_clash_report` | Write an HTML / CSV / JSON report (optionally with embedded clash images) and return its path. |
 
-### Example session
+### AutoNAV automation tools (ported from AutoNAV2)
+
+These bring the complete AutoNAV2 workflow — discipline detection, search-set generation, clash-test generation, and the AutoNAVismate one-button pipeline — directly into MCP:
+
+| Tool | AutoNAV2 equivalent |
+|---|---|
+| `list_disciplines` | Read the `1. DISCIPLINES` folder. |
+| `create_discipline_search_sets` | **Function 1** — auto-detect disciplines from model filenames and create a search set per discipline. Unknown files are surfaced back so the AI can ask you which discipline they are, then retry with `disciplineOverrides` (replaces the old pop-up picker). |
+| `list_discipline_properties` / `list_discipline_property_values` | Discover element properties/values for choosing what to split on. |
+| `create_property_search_sets` | **Function 2** — element-property (categorized) search sets per discipline. |
+| `create_custom_search_sets` | **Function 3** — a search set per distinct value of any property in a discipline. |
+| `generate_clash_tests` | **Function 4** — generate every cross-discipline clash test pair and run them (optional Walls/Floors precursor grouping). |
+| `group_walls_floors` | **Function 5** — group every test into Walls / Floors buckets. |
+| `group_all_tests` | **Functions 6/7** — group all tests by grid/level/selection/model/status/etc. with a naming template. |
+| `run_autonavismate` | **AutoNAVismate** — the full 1→2→4→5→6 pipeline in one call. |
+
+### Example sessions
+
+Coordination on an already-set-up model:
 
 > *"Run all clash tests, then group 'Mechanical vs Structural' by grid intersection, assign everything still New to the Mechanical trade, mark the sprinkler-main duplicates Reviewed with a comment, and give me an HTML report of what's still Active."*
 
-Claude chains: `run_all_clash_tests` → `group_clashes` → `assign_clashes` → `set_clash_status` + `add_clash_comment` → `create_clash_report`.
+Full setup from a freshly federated model:
+
+> *"Run AutoNAVismate on this model."*
+
+The AI calls `run_autonavismate`; if any model files can't be matched to a discipline it pauses and asks you which discipline each is, then continues once you answer — creating discipline + property search sets, generating and running all clash tests, and grouping/naming the results end-to-end.
 
 ## Development
 

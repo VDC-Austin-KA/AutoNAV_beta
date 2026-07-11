@@ -30,6 +30,12 @@ const cannedResults = {
     ],
   },
   assign_clashes: { test: "Mechanical vs Structural", assignedTo: "Mechanical", clashesUpdated: 3 },
+  create_discipline_search_sets: {
+    function: "1 — Discipline Search Sets",
+    disciplines: ["Architectural", "Mechanical", "Structural"],
+    log: ["[Warning] Function 1 complete."],
+  },
+  run_autonavismate: { workflow: "AutoNAVismate", status: "complete", steps: [] },
 };
 
 const bridge = net.createServer((socket) => {
@@ -125,6 +131,15 @@ try {
     "add_clash_comment",
     "group_clashes",
     "create_clash_report",
+    "list_disciplines",
+    "create_discipline_search_sets",
+    "list_discipline_properties",
+    "create_property_search_sets",
+    "create_custom_search_sets",
+    "generate_clash_tests",
+    "group_walls_floors",
+    "group_all_tests",
+    "run_autonavismate",
   ]) {
     assert(names.includes(expected), `tools/list includes ${expected}`);
   }
@@ -143,6 +158,20 @@ try {
   });
   const assignBody = JSON.parse(assign.result.content[0].text);
   assert(assignBody.clashesUpdated === 3, "assign_clashes round-trips");
+
+  const disc = await rpc("tools/call", {
+    name: "create_discipline_search_sets",
+    arguments: {},
+  });
+  const discBody = JSON.parse(disc.result.content[0].text);
+  assert(
+    Array.isArray(discBody.disciplines) && discBody.disciplines.includes("Mechanical"),
+    "create_discipline_search_sets round-trips"
+  );
+
+  const mate = await rpc("tools/call", { name: "run_autonavismate", arguments: {} });
+  const mateBody = JSON.parse(mate.result.content[0].text);
+  assert(mateBody.workflow === "AutoNAVismate", "run_autonavismate round-trips");
 
   const bad = await rpc("tools/call", {
     name: "delete_clash_test",

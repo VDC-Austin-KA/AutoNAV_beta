@@ -36,6 +36,20 @@ namespace AutoNAVMCP.Commands
 
             // Reporting
             { "create_clash_report",  ReportCommands.CreateClashReport },
+
+            // Search-set generation (AutoNAV2 Functions 1-3)
+            { "create_discipline_search_sets",       SearchSetCommands.CreateDisciplineSearchSets },
+            { "create_property_search_sets",         SearchSetCommands.CreatePropertySearchSets },
+            { "create_custom_search_sets",           SearchSetCommands.CreateCustomSearchSets },
+            { "list_disciplines",                    SearchSetCommands.ListDisciplines },
+            { "list_discipline_properties",          SearchSetCommands.ListDisciplineProperties },
+            { "list_discipline_property_values",     SearchSetCommands.ListDisciplinePropertyValues },
+
+            // Automated clash-test generation, grouping & full workflow (Functions 4-7 + AutoNAVismate)
+            { "generate_clash_tests",     WorkflowCommands.GenerateClashTests },
+            { "group_walls_floors",       WorkflowCommands.GroupWallsFloors },
+            { "group_all_tests",          WorkflowCommands.GroupAllTests },
+            { "run_autonavismate",        WorkflowCommands.RunAutoNavismate },
         };
 
         public static object Execute(string command, Dictionary<string, object> args)

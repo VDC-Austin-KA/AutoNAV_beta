@@ -1,7 +1,15 @@
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\bin\x64\Release\net48\AutoNAVMCP.dll
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\bin\x64\Release\net48\AutoNAVMCP.pdb
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\obj\x64\Release\net48\AutoNAVMCP.csproj.AssemblyReference.cache
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\obj\x64\Release\net48\AutoNAVMCP.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\obj\x64\Release\net48\AutoNAVMCP.csproj.CoreCompileInputs.cache
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\obj\x64\Release\net48\AutoNAVMCP.dll
-C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\obj\x64\Release\net48\AutoNAVMCP.pdb
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/bin/x64/Release/net48/AutoNAVMCP.dll
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/bin/x64/Release/net48/AutoNAVMCP.pdb
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/obj/x64/Release/net48/AutoNAVMCP.csproj.AssemblyReference.cache
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/obj/x64/Release/net48/AutoNAVMCP.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/obj/x64/Release/net48/AutoNAVMCP.csproj.CoreCompileInputs.cache
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/obj/x64/Release/net48/AutoNAVMCP.dll
+C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/obj/x64/Release/net48/AutoNAVMCP.pdb
+/home/user/AutoNAV_beta/plugin/bin/x64/Release/net48/AutoNAVMCP.dll
+/home/user/AutoNAV_beta/plugin/bin/x64/Release/net48/AutoNAVMCP.pdb
+/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.csproj.AssemblyReference.cache
+/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.GeneratedMSBuildEditorConfig.editorconfig
+/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.csproj.CoreCompileInputs.cache
+/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.sourcelink.json
+/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.dll
+/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.pdb

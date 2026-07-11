@@ -463,19 +463,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\minio\\.nuget\\packages\\": {}
+    "/root/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\minio\\Source\\Claude Co Work\\AutoNAV_beta-main\\plugin\\AutoNAVMCP.csproj",
+      "projectUniqueName": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
       "projectName": "AutoNAVMCP",
-      "projectPath": "C:\\Users\\minio\\Source\\Claude Co Work\\AutoNAV_beta-main\\plugin\\AutoNAVMCP.csproj",
-      "packagesPath": "C:\\Users\\minio\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\minio\\Source\\Claude Co Work\\AutoNAV_beta-main\\plugin\\obj\\",
+      "projectPath": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
+      "packagesPath": "/root/.nuget/packages/",
+      "outputPath": "/home/user/AutoNAV_beta/plugin/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\minio\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/root/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net48"
@@ -516,7 +516,7 @@
             "version": "[2027.0.0, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.422\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/tmp/claude-0/-home-user/aa7cf0d6-bc5c-5bff-ac9e-50aa29d5d605/scratchpad/dotnet/sdk/8.0.422/RuntimeIdentifierGraph.json"
       }
     }
   }
