@@ -83,7 +83,7 @@ The server speaks **stdio** by default (Claude Desktop, Claude Code, VS Code Git
 npm run start:http        # serves http://127.0.0.1:3711/mcp
 ```
 
-See **[docs/COPILOT.md](docs/COPILOT.md)** for a step-by-step walkthrough of connecting VS Code GitHub Copilot and Microsoft Copilot Studio (including the dev-tunnel setup Copilot Studio requires).
+See **[docs/COPILOT.md](docs/COPILOT.md)** for a step-by-step walkthrough of connecting VS Code GitHub Copilot and Microsoft Copilot Studio (including the dev-tunnel setup Copilot Studio requires), and **[docs/TEAMS.md](docs/TEAMS.md)** for publishing the Copilot Studio agent as a company-wide **Microsoft Teams** app (stable hosting, admin approval, org rollout).
 
 ## Tools
 

@@ -119,9 +119,9 @@ Approve the connection/tool prompt the first time. Then go bigger:
 
 The agent chains `run_all_clash_tests` → `group_clashes` → `assign_clashes` → `create_clash_report`; the report lands on the Navisworks PC (default `Documents\AutoNAV Reports`).
 
-### Step 6 — (Optional) Publish the agent
+### Step 6 — (Optional) Publish to Microsoft Teams for your company
 
-Publish it to Microsoft Teams / M365 Copilot via **Publish** in Copilot Studio so your team can drive coordination from chat — remembering that it only works while the Navisworks PC has the bridge, the MCP server, and the tunnel running.
+To make the agent a Teams app your whole company can add (not just you), follow **[TEAMS.md](TEAMS.md)** — it covers stable hosting for the endpoint, publishing the Teams channel, and the org-wide **admin-approval** step that's easy to miss. Remember it only works while the Navisworks PC has the bridge, the MCP server, and a reachable endpoint running.
 
 ### Troubleshooting
 
