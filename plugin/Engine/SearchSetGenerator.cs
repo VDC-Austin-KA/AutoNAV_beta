@@ -9,7 +9,7 @@ using Autodesk.Navisworks.Api.DocumentParts;
 
 namespace AutoNAVMCP
 {
-    public class SearchSetGenerator
+    public partial class SearchSetGenerator
     {
         private const string DISCIPLINES_FOLDER = "1. DISCIPLINES";
         private const string CLASH_SETS_FOLDER  = "2. CLASH SETS";
