@@ -12,7 +12,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node test/smoke.test.js"
+    "test": "node test/smoke.test.js && node test/http.test.js",
+    "start:http": "node index.js --http 3711"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
