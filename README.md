@@ -77,6 +77,14 @@ or Claude Code:
 claude mcp add navisworks -- node C:\path\to\AutoNAV_beta\mcp-server\index.js
 ```
 
+The server speaks **stdio** by default (Claude Desktop, Claude Code, VS Code GitHub Copilot). For remote clients that need an HTTP endpoint — notably **Microsoft Copilot Studio** — start it in streamable-HTTP mode instead:
+
+```
+npm run start:http        # serves http://127.0.0.1:3711/mcp
+```
+
+See **[docs/COPILOT.md](docs/COPILOT.md)** for a step-by-step walkthrough of connecting VS Code GitHub Copilot and Microsoft Copilot Studio (including the dev-tunnel setup Copilot Studio requires).
+
 ## Tools
 
 | Tool | Purpose |
