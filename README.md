@@ -114,6 +114,7 @@ These bring the complete AutoNAV2 workflow — discipline detection, search-set 
 | `list_disciplines` | Read the `1. DISCIPLINES` folder. |
 | `create_discipline_search_sets` | **Function 1** — auto-detect disciplines from model filenames and create a search set per discipline. Unknown files are surfaced back so the AI can ask you which discipline they are, then retry with `disciplineOverrides` (replaces the old pop-up picker). |
 | `list_discipline_properties` / `list_discipline_property_values` | Discover element properties/values for choosing what to split on. |
+| `suggest_search_set_properties` | Probe the models and **rank** the property locations that actually hold a system identifier (coverage, distinct values, example values), scored to favor **short** values since they land in every clash-group name. No AutoNAV2 equivalent — new intelligence layer. |
 | `create_property_search_sets` | **Function 2** — element-property (categorized) search sets per discipline. |
 | `create_custom_search_sets` | **Function 3** — a search set per distinct value of any property in a discipline. |
 | `generate_clash_tests` | **Function 4** — generate every cross-discipline clash test pair and run them (optional Walls/Floors precursor grouping). |

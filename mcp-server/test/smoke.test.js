@@ -134,6 +134,7 @@ try {
     "list_disciplines",
     "create_discipline_search_sets",
     "list_discipline_properties",
+    "suggest_search_set_properties",
     "create_property_search_sets",
     "create_custom_search_sets",
     "generate_clash_tests",

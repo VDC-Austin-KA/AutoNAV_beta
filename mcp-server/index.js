@@ -258,6 +258,16 @@ export function buildServer() {
   );
 
   tool(
+    "suggest_search_set_properties",
+    "Probe a discipline's models and rank the property locations that actually hold a usable system identifier — a duct's system code may live under Element/System Classification, Element/System Abbreviation, Element Properties/System Abbreviation, etc. Returns each candidate with coverage %, distinct-value count, average value length, and example values, plus a recommendation. Values are scored to favor SHORTER identifiers because the value is embedded in every clash-group name (less is more) — trades recognize their own system codes even when a value isn't self-explanatory. Use this before create_property_search_sets / create_custom_search_sets, and present the ranked options to the user.",
+    {
+      discipline: z.string().describe("Discipline search-set name (from list_disciplines)"),
+      maxItemsToScan: z.number().int().min(500).max(200000).optional().describe("Element scan cap per discipline (default 15000)"),
+    },
+    (args) => sendCommand("suggest_search_set_properties", args)
+  );
+
+  tool(
     "create_property_search_sets",
     "AutoNAV Function 2: create element-property (categorized) search sets under '2. CLASH SETS' for the given disciplines. If propertyCategory/propertyName are omitted, each discipline uses its recommended default property (as AutoNAVismate does).",
     {

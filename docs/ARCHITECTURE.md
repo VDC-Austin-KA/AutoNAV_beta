@@ -68,6 +68,12 @@ The full AutoNAV2 feature set (Functions 1–7 + AutoNAVismate) is ported verbat
 - **The `UnknownDisciplineDialog`** (WPF) is removed. Function 1's classifier now reads caller-supplied overrides from `DisciplineContext.Overrides` (source filename → discipline token); any file it still can't classify is recorded and returned as `unresolvedDisciplines` with `needsDisciplineInput: true`. The MCP client asks the user and re-invokes with `disciplineOverrides`. This turns a modal Windows dialog into a normal AI prompt.
 - **No WPF/WinForms UI** is compiled in — the plugin references `System.Windows.Forms` only for the main-thread marshalling control and message boxes in `PluginMain`.
 
+### Property suggestion (`suggest_search_set_properties`)
+
+A new capability with no AutoNAV2 equivalent (`SearchSetGenerator.Suggest.cs`, a `partial` extension of the ported class). System identifiers are inconsistently located across authoring tools — a duct's system code may sit under `Element / System Classification`, `Element / System Abbreviation`, `Element Properties / System Abbreviation`, and so on. Rather than making the user know where, the suggester does a single bounded walk (default 15,000 items) of the discipline's models, accumulating per-`(category, property)` stats for a curated candidate list plus any property whose name matches identifier keywords (`system`, `abbrev`, `classif`, `workset`, …).
+
+Each candidate is scored `0.45·coverage + 0.35·brevity + 0.20·granularity`. **Brevity is weighted heavily and deliberately** — the chosen value is embedded into every clash-group name, so shorter identifiers (a system abbreviation) are preferred over long descriptive names, on the premise that the assigned trade recognizes its own codes. The tool returns the ranked candidates with coverage %, distinct-value count, value-length stats, and shortest-first example values, plus a single recommendation; the AI presents these for the user to choose before `create_property_search_sets` / `create_custom_search_sets`.
+
 `WorkflowCommands` reproduces `MainWindow`'s AutoNAVismate sequence (F1 → F2-with-default-property-per-discipline → F4 → F5 → F6-grid-grouping-plus-template-naming, preserving Walls/Floors groups via `RenameGroupsExcludingWallsFloors`). Because grouping replaces the live `ClashTest` object, tests are re-resolved by `Guid` between steps.
 
 All four Navisworks years compile with the ported engines; the engines call the same `ClashCompat` shim documented above.

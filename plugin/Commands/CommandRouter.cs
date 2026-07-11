@@ -44,6 +44,7 @@ namespace AutoNAVMCP.Commands
             { "list_disciplines",                    SearchSetCommands.ListDisciplines },
             { "list_discipline_properties",          SearchSetCommands.ListDisciplineProperties },
             { "list_discipline_property_values",     SearchSetCommands.ListDisciplinePropertyValues },
+            { "suggest_search_set_properties",       SearchSetCommands.SuggestSearchSetProperties },
 
             // Automated clash-test generation, grouping & full workflow (Functions 4-7 + AutoNAVismate)
             { "generate_clash_tests",     WorkflowCommands.GenerateClashTests },

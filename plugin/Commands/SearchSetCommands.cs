@@ -132,6 +132,52 @@ namespace AutoNAVMCP.Commands
             };
         }
 
+        // Probe a discipline's models and rank the property locations that hold
+        // a usable system identifier — favoring short values (they end up in the
+        // clash-group name) and good coverage. The AI presents these so the user
+        // picks one for create_property_search_sets / create_custom_search_sets.
+        public static object SuggestSearchSetProperties(Dictionary<string, object> args)
+        {
+            CommandRouter.ActiveDocument();
+            string discipline = CommandRouter.RequireString(args, "discipline");
+            int maxScan = CommandRouter.GetInt(args, "maxItemsToScan", 15000);
+
+            var suggestions = SearchSetGenerator.SuggestSystemProperties(discipline, maxScan);
+            if (suggestions.Count == 0)
+                throw new CommandException(
+                    "No system-identifier properties found for '" + discipline + "'. " +
+                    "Check the discipline name (list_disciplines) or that its models carry element properties.");
+
+            var recommended = suggestions.FirstOrDefault(s => s.Recommended);
+            return new Dictionary<string, object>
+            {
+                { "discipline", discipline },
+                { "recommendation", recommended == null ? null : new Dictionary<string, object>
+                    {
+                        { "propertyCategory", recommended.Category },
+                        { "propertyName", recommended.Property },
+                        { "reason", recommended.Reason },
+                    } },
+                { "guidance", "Shorter values are better — the chosen property's value is embedded in every " +
+                              "clash-group name, so 'less is more'. Trades recognize their own system codes, so a " +
+                              "terse identifier (e.g. a system abbreviation) beats a long descriptive name." },
+                { "suggestions", suggestions.Select(s => (object)new Dictionary<string, object>
+                    {
+                        { "propertyCategory", s.Category },
+                        { "propertyName", s.Property },
+                        { "score", s.Score },
+                        { "recommended", s.Recommended },
+                        { "coveragePercent", s.CoveragePercent },
+                        { "distinctValues", s.DistinctValues },
+                        { "averageValueLength", s.AverageValueLength },
+                        { "shortestValueLength", s.ShortestValueLength },
+                        { "longestValueLength", s.LongestValueLength },
+                        { "exampleValues", s.ExampleValues.Cast<object>().ToList() },
+                        { "reason", s.Reason },
+                    }).ToList() },
+            };
+        }
+
         public static object ListDisciplinePropertyValues(Dictionary<string, object> args)
         {
             CommandRouter.ActiveDocument();
