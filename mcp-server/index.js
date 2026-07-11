@@ -218,6 +218,116 @@ export function buildServer() {
     (args) => sendCommand("create_clash_report", args)
   );
 
+  // ── AutoNAV2 workflow: search-set generation (Functions 1-3) ────────
+
+  tool(
+    "list_disciplines",
+    "List the discipline search sets currently under the '1. DISCIPLINES' folder (created by create_discipline_search_sets). These feed create_property_search_sets and clash-test generation.",
+    {},
+    (args) => sendCommand("list_disciplines", args)
+  );
+
+  tool(
+    "create_discipline_search_sets",
+    "AutoNAV Function 1: auto-detect disciplines from the loaded model filenames and create one search set per discipline under '1. DISCIPLINES'. If some files can't be classified, the result has needsDisciplineInput=true and lists them under unresolvedDisciplines — ask the user which discipline each file is, then call again with disciplineOverrides.",
+    {
+      disciplineOverrides: z
+        .record(z.string())
+        .optional()
+        .describe("Map of model source filename -> discipline token (e.g. {\"Level 3 - HVAC.rvt\": \"Mechanical\"}) for files that couldn't be auto-classified"),
+    },
+    (args) => sendCommand("create_discipline_search_sets", args)
+  );
+
+  tool(
+    "list_discipline_properties",
+    "List the element-property categories and properties available for a discipline's models — use to choose propertyCategory/propertyName for create_property_search_sets or create_custom_search_sets.",
+    { discipline: z.string().describe("Discipline search-set name (from list_disciplines)") },
+    (args) => sendCommand("list_discipline_properties", args)
+  );
+
+  tool(
+    "list_discipline_property_values",
+    "List the distinct values of a given element property within a discipline's models (e.g. all 'System Abbreviation' values). Each value becomes its own search set in create_custom_search_sets.",
+    {
+      discipline: z.string().describe("Discipline search-set name"),
+      propertyCategory: z.string().describe("Property category, e.g. 'Element'"),
+      propertyName: z.string().describe("Property name, e.g. 'System Abbreviation'"),
+    },
+    (args) => sendCommand("list_discipline_property_values", args)
+  );
+
+  tool(
+    "create_property_search_sets",
+    "AutoNAV Function 2: create element-property (categorized) search sets under '2. CLASH SETS' for the given disciplines. If propertyCategory/propertyName are omitted, each discipline uses its recommended default property (as AutoNAVismate does).",
+    {
+      disciplines: z.array(z.string()).optional().describe("Discipline names to process (default: all disciplines)"),
+      propertyCategory: z.string().optional().describe("Property category to split on, e.g. 'Element'"),
+      propertyName: z.string().optional().describe("Property name to split on, e.g. 'System Abbreviation'"),
+    },
+    (args) => sendCommand("create_property_search_sets", args)
+  );
+
+  tool(
+    "create_custom_search_sets",
+    "AutoNAV Function 3: create a custom search set for every distinct value of a chosen property within one discipline's models (advanced refinement).",
+    {
+      discipline: z.string().describe("Discipline search-set name"),
+      propertyCategory: z.string().describe("Property category, e.g. 'Element'"),
+      propertyName: z.string().describe("Property name, e.g. 'Workset'"),
+    },
+    (args) => sendCommand("create_custom_search_sets", args)
+  );
+
+  // ── AutoNAV2 workflow: clash generation, grouping, full pipeline ────
+
+  tool(
+    "generate_clash_tests",
+    "AutoNAV Function 4: generate every cross-discipline clash test pair from the discipline search sets and run them. Set wallsFloorsPrecursor=true for Function 5-style Walls/Floors precursor grouping during generation.",
+    {
+      wallsFloorsPrecursor: z.boolean().optional().describe("Generate Walls/Floors precursor-grouped tests (default false)"),
+    },
+    (args) => sendCommand("generate_clash_tests", args)
+  );
+
+  tool(
+    "group_walls_floors",
+    "AutoNAV Function 5: group every clash test's results into 'Walls' and 'Floors' buckets per discipline pair.",
+    {},
+    (args) => sendCommand("group_walls_floors", args)
+  );
+
+  tool(
+    "group_all_tests",
+    "AutoNAV Functions 6/7: group every clash test's results by the chosen mode (default gridIntersection = nearest grid + level) with an optional sub-grouping mode, and apply a naming template. namingTemplate supports tokens {Month}{Day}{Year}{Level}{Area}{TestName}{SelectionA}{SelectionB}{#}; pass 'default' for the standard preset or '' for legacy auto-naming.",
+    {
+      mode: z
+        .enum(["None", "Level", "GridIntersection", "SelectionA", "SelectionB", "ModelA", "ModelB", "AssignedTo", "ApprovedBy", "Status", "File", "Layer", "First", "Last", "LastUnique", "WallsAndFloors"])
+        .optional()
+        .describe("Primary grouping mode (default GridIntersection)"),
+      subMode: z
+        .enum(["None", "Level", "GridIntersection", "SelectionA", "SelectionB", "ModelA", "ModelB", "AssignedTo", "ApprovedBy", "Status", "File", "Layer", "First", "Last", "LastUnique"])
+        .optional()
+        .describe("Optional sub-grouping mode within each primary group (default None)"),
+      namingTemplate: z.string().optional().describe("'default' for the standard preset, '' for legacy names, or a custom template with {tokens}"),
+      keepExistingGroups: z.boolean().optional().describe("Preserve existing groups such as Walls/Floors (default true)"),
+      newStatusFilter: z.array(z.enum(CLASH_STATUSES)).optional().describe("Only freshly group clashes in these statuses (default [New])"),
+    },
+    (args) => sendCommand("group_all_tests", args)
+  );
+
+  tool(
+    "run_autonavismate",
+    "AutoNAVismate: run the entire AutoNAV pipeline end-to-end — Function 1 (discipline search sets) → 2 (property search sets) → 4 (generate + run clash tests) → 5 (Walls/Floors grouping) → 6 (grid grouping + naming). If Function 1 can't classify some files it pauses with needsDisciplineInput=true; gather the disciplines from the user and call again with disciplineOverrides.",
+    {
+      disciplineOverrides: z
+        .record(z.string())
+        .optional()
+        .describe("Map of model source filename -> discipline token for files that couldn't be auto-classified"),
+    },
+    (args) => sendCommand("run_autonavismate", args)
+  );
+
   return server;
 }
 

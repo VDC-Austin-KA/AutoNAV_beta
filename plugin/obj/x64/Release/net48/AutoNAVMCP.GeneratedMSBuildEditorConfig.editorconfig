@@ -1,5 +1,5 @@
 is_global = true
 build_property.RootNamespace = AutoNAVMCP
-build_property.ProjectDir = C:\Users\minio\Source\Claude Co Work\AutoNAV_beta-main\plugin\
+build_property.ProjectDir = /home/user/AutoNAV_beta/plugin/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
