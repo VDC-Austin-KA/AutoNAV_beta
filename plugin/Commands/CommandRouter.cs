@@ -51,6 +51,17 @@ namespace AutoNAVMCP.Commands
             { "group_walls_floors",       WorkflowCommands.GroupWallsFloors },
             { "group_all_tests",          WorkflowCommands.GroupAllTests },
             { "run_autonavismate",        WorkflowCommands.RunAutoNavismate },
+
+            // Macros: record / save / recall / replay AutoNAV action sequences
+            { "start_recording",  MacroCommands.StartRecording },
+            { "stop_recording",   MacroCommands.StopRecording },
+            { "get_recording",    MacroCommands.GetRecording },
+            { "clear_recording",  MacroCommands.ClearRecording },
+            { "save_macro",       MacroCommands.SaveMacro },
+            { "list_macros",      MacroCommands.ListMacros },
+            { "get_macro",        MacroCommands.GetMacro },
+            { "delete_macro",     MacroCommands.DeleteMacro },
+            { "replay_macro",     MacroCommands.ReplayMacro },
         };
 
         public static object Execute(string command, Dictionary<string, object> args)
@@ -58,7 +69,36 @@ namespace AutoNAVMCP.Commands
             Func<Dictionary<string, object>, object> handler;
             if (!Handlers.TryGetValue(command, out handler))
                 throw new CommandException("Unknown command '" + command + "'.");
-            return handler(args);
+
+            // Journal the action when recording (control commands self-exclude).
+            if (!Macros.MacroRecorder.IsRecording || Macros.MacroRecorder.ControlCommands.Contains(command))
+                return handler(args);
+
+            try
+            {
+                object result = handler(args);
+                Macros.MacroRecorder.Record(command, args, true, Summarize(result));
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Macros.MacroRecorder.Record(command, args, false, ex.Message);
+                throw;
+            }
+        }
+
+        // Compact one-line outcome for the recording journal.
+        private static string Summarize(object result)
+        {
+            var dict = result as Dictionary<string, object>;
+            if (dict == null) return "";
+            foreach (string key in new[] { "function", "workflow", "created", "saved", "summary", "note" })
+            {
+                object v;
+                if (dict.TryGetValue(key, out v) && v != null)
+                    return Convert.ToString(v, CultureInfo.InvariantCulture);
+            }
+            return "";
         }
 
         // ── Parameter helpers ────────────────────────────────────────
