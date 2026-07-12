@@ -338,6 +338,85 @@ export function buildServer() {
     (args) => sendCommand("run_autonavismate", args)
   );
 
+  // ── Macros: record / save / recall / replay action sequences ───────
+
+  tool(
+    "start_recording",
+    "Begin journaling every AutoNAV action (create/generate/group/assign/report/…) so the sequence can be saved as a macro and replayed later. Note: this records AutoNAV/MCP actions — not arbitrary manual Navisworks UI actions (camera moves, ribbon clicks), which the Navisworks API can't capture.",
+    { name: z.string().optional().describe("Label for this recording session") },
+    (args) => sendCommand("start_recording", args)
+  );
+
+  tool(
+    "stop_recording",
+    "Stop journaling and return the captured steps (each flagged mutating vs read-only). Follow with save_macro to persist them.",
+    {},
+    (args) => sendCommand("stop_recording", args)
+  );
+
+  tool(
+    "get_recording",
+    "Show the current recording session's captured steps without stopping it — use this to analyze the sequence and decide which steps to keep.",
+    {},
+    (args) => sendCommand("get_recording", args)
+  );
+
+  tool(
+    "clear_recording",
+    "Discard the current recording session's captured steps.",
+    {},
+    (args) => sendCommand("clear_recording", args)
+  );
+
+  tool(
+    "save_macro",
+    "Save the current recording as a named macro on the Navisworks machine (persists across restarts). By default only mutating steps are kept; pass explicit 1-based step indices to save a chosen subset, or includeReadOnly to keep queries too.",
+    {
+      name: z.string().describe("Macro name"),
+      description: z.string().optional().describe("What the macro does"),
+      steps: z.array(z.string()).optional().describe("1-based step indices to include (default: all mutating steps)"),
+      includeReadOnly: z.boolean().optional().describe("Also keep read-only query steps (default false)"),
+      overwrite: z.boolean().optional().describe("Replace an existing macro of the same name (default false)"),
+    },
+    (args) => sendCommand("save_macro", args)
+  );
+
+  tool(
+    "list_macros",
+    "List saved macros on the Navisworks machine, with their descriptions and step counts.",
+    {},
+    (args) => sendCommand("list_macros", args)
+  );
+
+  tool(
+    "get_macro",
+    "Show a saved macro's ordered steps (command + parameters) so it can be reviewed before replay.",
+    { name: z.string().describe("Macro name") },
+    (args) => sendCommand("get_macro", args)
+  );
+
+  tool(
+    "delete_macro",
+    "Delete a saved macro.",
+    { name: z.string().describe("Macro name") },
+    (args) => sendCommand("delete_macro", args)
+  );
+
+  tool(
+    "replay_macro",
+    "Re-run a saved macro's steps in order. Use dryRun to preview without executing, and overrides to change parameters per step (e.g. run the same workflow on a different discipline or clash test). Stops on the first error unless stopOnError=false.",
+    {
+      name: z.string().describe("Macro name"),
+      dryRun: z.boolean().optional().describe("List the steps that would run without executing them"),
+      stopOnError: z.boolean().optional().describe("Abort on the first failing step (default true)"),
+      overrides: z
+        .record(z.record(z.any()))
+        .optional()
+        .describe("Per-step parameter overrides keyed by 1-based step index, e.g. {\"2\": {\"discipline\": \"Plumbing\"}}"),
+    },
+    (args) => sendCommand("replay_macro", args)
+  );
+
   return server;
 }
 

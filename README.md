@@ -122,6 +122,20 @@ These bring the complete AutoNAV2 workflow — discipline detection, search-set 
 | `group_all_tests` | **Functions 6/7** — group all tests by grid/level/selection/model/status/etc. with a naming template. |
 | `run_autonavismate` | **AutoNAVismate** — the full 1→2→4→5→6 pipeline in one call. |
 
+### Macros — record, save, recall & replay
+
+Capture a sequence of AutoNAV actions and replay it later, saved on the Navisworks machine and recalled through the MCP:
+
+| Tool | Purpose |
+|---|---|
+| `start_recording` / `stop_recording` | Journal every AutoNAV action performed between them. |
+| `get_recording` / `clear_recording` | Inspect or discard the in-progress recording (the AI can analyze it and pick which steps matter). |
+| `save_macro` | Persist the recorded steps as a named macro (mutating steps by default, or a chosen subset). |
+| `list_macros` / `get_macro` / `delete_macro` | Manage saved macros. |
+| `replay_macro` | Re-run a macro in order — with `dryRun` to preview, and per-step `overrides` to retarget it (e.g. the same workflow on a different discipline or clash test). |
+
+> **Scope:** macros capture AutoNAV/MCP *actions* (create tests, group, assign, report, run AutoNAVismate…) — the deterministic, replayable operations. They do **not** capture arbitrary manual Navisworks UI actions (camera moves, ribbon clicks); the Navisworks .NET API provides no hook to record or replay those.
+
 ### Example sessions
 
 Coordination on an already-set-up model:

@@ -36,6 +36,11 @@ const cannedResults = {
     log: ["[Warning] Function 1 complete."],
   },
   run_autonavismate: { workflow: "AutoNAVismate", status: "complete", steps: [] },
+  start_recording: { recording: true, session: "test" },
+  stop_recording: { recording: false, stepsCaptured: 2, steps: [] },
+  save_macro: { saved: "Nightly", steps: 2, commands: ["generate_clash_tests", "group_all_tests"] },
+  list_macros: { count: 1, macros: [{ name: "Nightly", description: "", steps: 2 }] },
+  replay_macro: { macro: "Nightly", executed: 2, failed: 0, results: [] },
 };
 
 const bridge = net.createServer((socket) => {
@@ -141,6 +146,13 @@ try {
     "group_walls_floors",
     "group_all_tests",
     "run_autonavismate",
+    "start_recording",
+    "stop_recording",
+    "save_macro",
+    "list_macros",
+    "get_macro",
+    "replay_macro",
+    "delete_macro",
   ]) {
     assert(names.includes(expected), `tools/list includes ${expected}`);
   }
@@ -173,6 +185,19 @@ try {
   const mate = await rpc("tools/call", { name: "run_autonavismate", arguments: {} });
   const mateBody = JSON.parse(mate.result.content[0].text);
   assert(mateBody.workflow === "AutoNAVismate", "run_autonavismate round-trips");
+
+  const rec = await rpc("tools/call", { name: "start_recording", arguments: { name: "test" } });
+  assert(JSON.parse(rec.result.content[0].text).recording === true, "start_recording round-trips");
+
+  const saved = await rpc("tools/call", {
+    name: "save_macro",
+    arguments: { name: "Nightly", description: "test" },
+  });
+  assert(JSON.parse(saved.result.content[0].text).saved === "Nightly", "save_macro round-trips");
+
+  const replay = await rpc("tools/call", { name: "replay_macro", arguments: { name: "Nightly" } });
+  const replayBody = JSON.parse(replay.result.content[0].text);
+  assert(replayBody.executed === 2 && replayBody.failed === 0, "replay_macro round-trips");
 
   const bad = await rpc("tools/call", {
     name: "delete_clash_test",
