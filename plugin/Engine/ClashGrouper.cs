@@ -1501,6 +1501,23 @@ namespace AutoNAVMCP
                 {
                     if (progressBar.IsCanceled) break;
 
+                    // Step A — snapshot children and detach them from their in-memory
+                    // parent BEFORE the shell is added.  GroupBy* methods populate
+                    // in-memory groups via Children.Add(copy), which sets copy.Parent
+                    // to the in-memory group.  If we iterate grp.Children during the
+                    // shell+fill phase those children still carry a Parent reference,
+                    // and TestsAddCopy refuses to add them ("Cannot transfer ownership
+                    // from argument 'child'").
+                    var pending = new List<ClashResult>();
+                    foreach (SavedItem ch in grp.Children)
+                        if (ch is ClashResult cr) pending.Add(cr);
+
+                    // Detach — clearing the in-memory group's Children nulls Parent
+                    // on each child, leaving them as standalone in-memory copies that
+                    // TestsAddCopy can freely copy into the document.
+                    while (grp.Children.Count > 0)
+                        grp.Children.RemoveAt(0);
+
                     // Step 1 — add the empty shell so the group exists in the document.
                     docClash.TestsData.TestsAddCopy(
                         (GroupItem)ClashCompat.TestAt(docClash.TestsData, idx),
@@ -1520,12 +1537,11 @@ namespace AutoNAVMCP
 
                     if (liveGroup == null) continue;
 
-                    // Step 3 — copy each result into the live document-bound group.
-                    foreach (SavedItem child in grp.Children)
+                    // Step 3 — add each now-detached copy into the live document-bound group.
+                    foreach (ClashResult cr in pending)
                     {
                         if (progressBar.IsCanceled) break;
-                        if (child is ClashResult cr)
-                            docClash.TestsData.TestsAddCopy(liveGroup, cr);
+                        docClash.TestsData.TestsAddCopy(liveGroup, cr);
                         progressBar.Update((double)++done / Math.Max(totalItems, 1));
                     }
                 }
@@ -1537,6 +1553,11 @@ namespace AutoNAVMCP
                     foreach (ClashResultGroup grp in preserveGroups)
                     {
                         if (progressBar.IsCanceled) break;
+                        // Re-resolve the test index by GUID before every add — the
+                        // built-groups loop above replaced the test so the handle
+                        // at `idx` may now be stale.
+                        idx = ClashCompat.IndexOfTestByGuid(docClash.TestsData, testGuid);
+                        if (idx < 0) break;
                         docClash.TestsData.TestsAddCopy(
                             (GroupItem)ClashCompat.TestAt(docClash.TestsData, idx), grp);
                         done += grp.Children.Count;
@@ -1544,11 +1565,17 @@ namespace AutoNAVMCP
                     }
                 }
 
-                foreach (ClashResult cr in ungroupedClashResults)
+                // Re-resolve index one final time before adding ungrouped results.
+                idx = ClashCompat.IndexOfTestByGuid(docClash.TestsData, testGuid);
+                if (idx >= 0)
                 {
-                    if (progressBar.IsCanceled) break;
-                    docClash.TestsData.TestsAddCopy((GroupItem)ClashCompat.TestAt(docClash.TestsData, idx), cr);
-                    progressBar.Update((double)++done / Math.Max(totalItems, 1));
+                    foreach (ClashResult cr in ungroupedClashResults)
+                    {
+                        if (progressBar.IsCanceled) break;
+                        docClash.TestsData.TestsAddCopy(
+                            (GroupItem)ClashCompat.TestAt(docClash.TestsData, idx), cr);
+                        progressBar.Update((double)++done / Math.Max(totalItems, 1));
+                    }
                 }
 
                 tx.Commit();

@@ -12,6 +12,10 @@ namespace AutoNAVMCP.Commands
     // AutoNAVismate pipeline as headless bridge commands.
     internal static class WorkflowCommands
     {
+        // Diagnostic build stamp — incremented on each deploy so the
+        // MCP client can confirm which build is executing.
+        internal const string BuildStamp = "2026.07.13-fixB";
+
         // AutoNAVismate's default naming template and Function 6 defaults,
         // mirrored from MainWindow.xaml / RunFunction6WithDefaults.
         public const string DefaultNamingTemplate =
@@ -52,6 +56,8 @@ namespace AutoNAVMCP.Commands
         // sub) mode, optionally applying a naming template.
         public static object GroupAllTests(Dictionary<string, object> args)
         {
+            System.Console.Error.WriteLine("AUTONAV_DIAG:group_all_tests entered — build " + BuildStamp);
+
             Document doc = CommandRouter.ActiveDocument();
             DocumentClash clash = ClashHelpers.GetClashPart(doc);
 

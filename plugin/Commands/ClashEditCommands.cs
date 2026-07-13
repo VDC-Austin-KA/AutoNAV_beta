@@ -219,6 +219,7 @@ namespace AutoNAVMCP.Commands
         // results appended against the live, document-bound group reference.
         public static object GroupClashes(Dictionary<string, object> args)
         {
+            System.Console.Error.WriteLine("AUTONAV_DIAG:group_clashes entered — build " + WorkflowCommands.BuildStamp);
             Document doc = CommandRouter.ActiveDocument();
             DocumentClash clash = ClashHelpers.GetClashPart(doc);
             ClashTest test = ClashHelpers.FindTest(clash.TestsData, CommandRouter.RequireString(args, "test"));
@@ -260,20 +261,37 @@ namespace AutoNAVMCP.Commands
 
                 foreach (var bucket in buckets.OrderBy(b => b.Key, StringComparer.OrdinalIgnoreCase))
                 {
-                    dct.TestsAddCopy((GroupItem)ClashCompat.TestAt(dct, index),
-                        new ClashResultGroup { DisplayName = bucket.Key });
+                    // Re-resolve test by GUID before every bucket — the
+                    // previous bucket's TestsAddCopy may have invalidated
+                    // the handle.
+                    index = ClashCompat.IndexOfTestByGuid(dct, testGuid);
+                    if (index < 0) continue;
 
-                    var liveTest = (ClashTest)ClashCompat.TestAt(dct, index);
+                    string groupName = bucket.Key;
+                    dct.TestsAddCopy((GroupItem)ClashCompat.TestAt(dct, index),
+                        new ClashResultGroup { DisplayName = groupName });
+
+                    // Re-resolve test again after adding the group shell.
+                    index = ClashCompat.IndexOfTestByGuid(dct, testGuid);
+                    if (index < 0) continue;
+                    ClashTest liveTest = (ClashTest)ClashCompat.TestAt(dct, index);
                     ClashResultGroup liveGroup = null;
-                    for (int i = liveTest.Children.Count - 1; i >= 0; i--)
+                    for (int i = 0; i < liveTest.Children.Count; i++)
                     {
-                        liveGroup = liveTest.Children[i] as ClashResultGroup;
-                        if (liveGroup != null) break;
+                        if (liveTest.Children[i] is ClashResultGroup crg &&
+                            string.Equals(crg.DisplayName, groupName, StringComparison.Ordinal))
+                        {
+                            liveGroup = crg;
+                            break;
+                        }
                     }
                     if (liveGroup == null) continue;
 
                     foreach (ClashResult copy in bucket.Value)
-                        dct.TestsAddCopy(liveGroup, copy);
+                    {
+                        ClashResult detached = (ClashResult)copy.CreateCopy();
+                        dct.TestsAddCopy(liveGroup, detached);
+                    }
                 }
                 tx.Commit();
             }
