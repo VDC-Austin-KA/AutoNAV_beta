@@ -75,9 +75,16 @@ namespace AutoNAVMCP.Commands
             int testCount = 0;
             EngineRun run = EngineRun.Run(() =>
             {
-                foreach (ClashTest test in ClashCompat.EnumerateTests(clash.TestsData).ToList())
+                // Capture GUIDs up front, then re-resolve each test by GUID right
+                // before grouping it — grouping a test replaces its object in the
+                // collection, so a handle snapshot goes stale after the first one.
+                var guids = ClashCompat.EnumerateTests(clash.TestsData).Select(t => t.Guid).ToList();
+                foreach (Guid g in guids)
                 {
-                    ClashGrouper.GroupClashes(test, primary, sub, keepExisting, template, newStatuses);
+                    DocumentClashTests dct = ClashHelpers.GetClashPart(doc).TestsData;
+                    ClashTest fresh = ClashCompat.ResolveTestByGuid(dct, g);
+                    if (fresh == null) continue;
+                    ClashGrouper.GroupClashes(fresh, primary, sub, keepExisting, template, newStatuses);
                     testCount++;
                 }
             });
@@ -154,16 +161,24 @@ namespace AutoNAVMCP.Commands
 
             // Step 5 — Function 6: grid-intersection grouping + template naming,
             // preserving the Walls/Floors groups from step 4.
-            DocumentClash clash = ClashHelpers.GetClashPart(doc);
             var newStatuses = new HashSet<ClashResultStatus> { ClashResultStatus.New };
             int f6Count = 0;
             EngineRun f6 = EngineRun.Run(() =>
             {
-                foreach (ClashTest test in ClashCompat.EnumerateTests(clash.TestsData).ToList())
+                var guids = ClashCompat.EnumerateTests(ClashHelpers.GetClashPart(doc).TestsData)
+                    .Select(t => t.Guid).ToList();
+                foreach (Guid g in guids)
                 {
-                    ClashGrouper.GroupClashes(test, ClashGrouper.GroupingMode.GridIntersection,
+                    DocumentClashTests dct = ClashHelpers.GetClashPart(doc).TestsData;
+                    ClashTest fresh = ClashCompat.ResolveTestByGuid(dct, g);
+                    if (fresh == null) continue;
+                    ClashGrouper.GroupClashes(fresh, ClashGrouper.GroupingMode.GridIntersection,
                         ClashGrouper.GroupingMode.None, true, "", newStatuses);
-                    RenameGroupsExcludingWallsFloors(clash, test, DefaultNamingTemplate);
+
+                    ClashTest afterGroup = ClashCompat.ResolveTestByGuid(
+                        ClashHelpers.GetClashPart(doc).TestsData, g);
+                    if (afterGroup != null)
+                        RenameGroupsExcludingWallsFloors(ClashHelpers.GetClashPart(doc), afterGroup, DefaultNamingTemplate);
                     f6Count++;
                 }
             });

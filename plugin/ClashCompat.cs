@@ -44,6 +44,33 @@ namespace AutoNAVMCP
             return GetTopLevelTests(dct).IndexOf(item);
         }
 
+        // Resolve a test's current index by GUID rather than by dereferencing a
+        // handle. .IndexOf(handle) touches the passed handle's native pointer,
+        // which throws "Object has been Disposed (WeakRef)" once an earlier
+        // grouping op (e.g. Function 5) has rebuilt the tests collection and
+        // invalidated any handle captured beforehand. GUID comparison reads only
+        // live handles from the current collection.
+        public static int IndexOfTestByGuid(DocumentClashTests dct, Guid guid)
+        {
+            IList<SavedItem> tests = GetTopLevelTests(dct);
+            for (int i = 0; i < tests.Count; i++)
+            {
+                ClashTest ct = tests[i] as ClashTest;
+                if (ct != null && ct.Guid == guid) return i;
+            }
+            return -1;
+        }
+
+        // Re-fetch a live ClashTest by GUID from the current document state.
+        // Callers must not reuse ClashTest handles across a mutation or across
+        // command calls — always re-resolve immediately before use.
+        public static ClashTest ResolveTestByGuid(DocumentClashTests dct, Guid guid)
+        {
+            foreach (ClashTest t in EnumerateTests(dct))
+                if (t.Guid == guid) return t;
+            return null;
+        }
+
         public static SavedItem TestAt(DocumentClashTests dct, int index)
         {
             return GetTopLevelTests(dct)[index];
