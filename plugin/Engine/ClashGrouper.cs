@@ -135,13 +135,14 @@ namespace AutoNAVMCP
                     clashResultGroups.AddRange(wrapped);
                 }
 
-                if (keepExistingGroups)
-                {
-                    var existingGroups = BackupExistingClashGroups(selectedClashTest).ToList();
-                    clashResultGroups.AddRange(existingGroups);
-                }
+                // Existing groups are added whole (deep-copy) rather than merged
+                // into the shell+fill list, so their already-owned children don't
+                // trip "Cannot transfer ownership".
+                List<ClashResultGroup> preserve = keepExistingGroups
+                    ? BackupExistingClashGroups(selectedClashTest).ToList()
+                    : null;
 
-                ProcessClashGroup(clashResultGroups, ungroupedClashResults, selectedClashTest);
+                ProcessClashGroup(clashResultGroups, ungroupedClashResults, selectedClashTest, preserve);
             }
             catch (Exception ex)
             {
@@ -233,13 +234,11 @@ namespace AutoNAVMCP
                     clashResultGroups.AddRange(wrapped);
                 }
 
-                if (keepExistingGroups)
-                {
-                    var existingGroups = BackupExistingClashGroups(selectedClashTest).ToList();
-                    clashResultGroups.AddRange(existingGroups);
-                }
+                List<ClashResultGroup> preserve = keepExistingGroups
+                    ? BackupExistingClashGroups(selectedClashTest).ToList()
+                    : null;
 
-                ProcessClashGroup(clashResultGroups, ungroupedClashResults, selectedClashTest);
+                ProcessClashGroup(clashResultGroups, ungroupedClashResults, selectedClashTest, preserve);
             }
             catch (Exception ex)
             {
@@ -1445,35 +1444,69 @@ namespace AutoNAVMCP
             List<ClashResult> ungroupedClashResults,
             ClashTest selectedClashTest)
         {
+            ProcessClashGroup(clashGroups, ungroupedClashResults, selectedClashTest, null);
+        }
+
+        // Writes freshly-built groups + ungrouped results (and optionally a set
+        // of already-existing document groups to preserve) back into the test.
+        //
+        // Two distinct add strategies, because they are NOT interchangeable:
+        //   * builtGroups   — constructed in memory (new ClashResultGroup with
+        //     .Children.Add). TestsAddCopy does NOT deep-copy an in-memory
+        //     group's children, so each is added as an empty shell and its
+        //     results appended one-by-one against the live group.
+        //   * preserveGroups — obtained via CreateCopy() of existing document
+        //     groups; their children are already OWNED by the copy, so feeding
+        //     them through the shell+fill path throws "Cannot transfer ownership
+        //     from argument 'child'". They must be added whole in a single
+        //     TestsAddCopy, which deep-copies a document-derived group intact.
+        //
+        // The test is located by GUID (never by dereferencing the passed handle,
+        // which may be stale after an earlier mutation) and re-resolved after the
+        // clearing replace.
+        private static void ProcessClashGroup(
+            List<ClashResultGroup> builtGroups,
+            List<ClashResult> ungroupedClashResults,
+            ClashTest selectedClashTest,
+            List<ClashResultGroup> preserveGroups)
+        {
             Transaction tx = null;
             Progress progressBar = null;
             try
             {
+                // Capture identity while the handle is still valid, then work by GUID.
+                Guid testGuid = selectedClashTest.Guid;
+                ClashTest emptyCopy = (ClashTest)selectedClashTest.CreateCopyWithoutChildren();
+
                 DocumentClash docClash = Application.MainDocument.GetClash();
-                int idx = ClashCompat.IndexOfTest(docClash.TestsData, selectedClashTest);
+                int idx = ClashCompat.IndexOfTestByGuid(docClash.TestsData, testGuid);
                 if (idx < 0) return;
 
                 tx = Application.MainDocument.BeginTransaction("Group clashes");
 
-                // Replace the test with an empty copy to clear existing children
-                ClashCompat.TestsReplaceAtRoot(
-                    docClash.TestsData,
-                    idx, (ClashTest)selectedClashTest.CreateCopyWithoutChildren());
+                // Replace the test with an empty copy to clear existing children.
+                ClashCompat.TestsReplaceAtRoot(docClash.TestsData, idx, emptyCopy);
 
-                int totalItems = clashGroups.Sum(g => g.Children.Count) + ungroupedClashResults.Count;
+                // The replace may shift indices; re-resolve by GUID.
+                idx = ClashCompat.IndexOfTestByGuid(docClash.TestsData, testGuid);
+                if (idx < 0) { tx.Commit(); return; }
+
+                int totalItems = builtGroups.Sum(g => g.Children.Count)
+                               + ungroupedClashResults.Count
+                               + (preserveGroups != null ? preserveGroups.Sum(g => g.Children.Count) : 0);
                 progressBar = Application.BeginProgress("Grouping Clashes", "Processing...");
                 int done = 0;
 
-                foreach (ClashResultGroup grp in clashGroups)
+                foreach (ClashResultGroup grp in builtGroups)
                 {
                     if (progressBar.IsCanceled) break;
 
-                    // Step 1 — add the empty shell so the group exists in the document
+                    // Step 1 — add the empty shell so the group exists in the document.
                     docClash.TestsData.TestsAddCopy(
                         (GroupItem)ClashCompat.TestAt(docClash.TestsData, idx),
                         new ClashResultGroup { DisplayName = grp.DisplayName });
 
-                    // Step 2 — walk back to find the live group reference (last ClashResultGroup)
+                    // Step 2 — find the live group reference (last ClashResultGroup).
                     ClashTest liveTest = (ClashTest)ClashCompat.TestAt(docClash.TestsData, idx);
                     ClashResultGroup liveGroup = null;
                     for (int i = liveTest.Children.Count - 1; i >= 0; i--)
@@ -1487,13 +1520,27 @@ namespace AutoNAVMCP
 
                     if (liveGroup == null) continue;
 
-                    // Step 3 — add each result to the live document-bound group
+                    // Step 3 — copy each result into the live document-bound group.
                     foreach (SavedItem child in grp.Children)
                     {
                         if (progressBar.IsCanceled) break;
                         if (child is ClashResult cr)
                             docClash.TestsData.TestsAddCopy(liveGroup, cr);
                         progressBar.Update((double)++done / Math.Max(totalItems, 1));
+                    }
+                }
+
+                // Preserve existing document groups by adding each whole copy in
+                // one call (deep-copies children; avoids ownership-transfer).
+                if (preserveGroups != null)
+                {
+                    foreach (ClashResultGroup grp in preserveGroups)
+                    {
+                        if (progressBar.IsCanceled) break;
+                        docClash.TestsData.TestsAddCopy(
+                            (GroupItem)ClashCompat.TestAt(docClash.TestsData, idx), grp);
+                        done += grp.Children.Count;
+                        progressBar.Update((double)done / Math.Max(totalItems, 1));
                     }
                 }
 

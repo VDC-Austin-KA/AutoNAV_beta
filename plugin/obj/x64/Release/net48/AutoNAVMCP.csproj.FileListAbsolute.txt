@@ -10,6 +10,5 @@ C:/Users/minio/Source/Claude Co Work/AutoNAV_beta-main/plugin/obj/x64/Release/ne
 /home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.csproj.AssemblyReference.cache
 /home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.GeneratedMSBuildEditorConfig.editorconfig
 /home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.csproj.CoreCompileInputs.cache
-/home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.sourcelink.json
 /home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.dll
 /home/user/AutoNAV_beta/plugin/obj/x64/Release/net48/AutoNAVMCP.pdb

@@ -243,14 +243,20 @@ namespace AutoNAVMCP.Commands
             }
 
             DocumentClashTests dct = clash.TestsData;
-            int index = ClashCompat.IndexOfTest(dct, test);
+            // Resolve/track by GUID, never by dereferencing the test handle
+            // (which may be stale after an earlier grouping op such as F5).
+            Guid testGuid = test.Guid;
+            ClashTest emptyCopy = (ClashTest)test.CreateCopyWithoutChildren();
+            int index = ClashCompat.IndexOfTestByGuid(dct, testGuid);
             if (index < 0) throw new CommandException("Could not locate test in the document.");
 
             Transaction tx = doc.BeginTransaction("AutoNAV MCP group clashes");
             try
             {
                 // Clear the test's children, then repopulate with groups.
-                ClashCompat.TestsReplaceAtRoot(dct, index, (ClashTest)test.CreateCopyWithoutChildren());
+                ClashCompat.TestsReplaceAtRoot(dct, index, emptyCopy);
+                index = ClashCompat.IndexOfTestByGuid(dct, testGuid);
+                if (index < 0) throw new CommandException("Test disappeared during grouping.");
 
                 foreach (var bucket in buckets.OrderBy(b => b.Key, StringComparer.OrdinalIgnoreCase))
                 {
