@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "wUdtmrcuBRY=",
+  "dgSpecHash": "L/2xFCiMXj0=",
   "success": true,
-  "projectFilePath": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
+  "projectFilePath": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj",
   "expectedPackageFiles": [
-    "/root/.nuget/packages/microsoft.netframework.referenceassemblies/1.0.3/microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
-    "/root/.nuget/packages/microsoft.netframework.referenceassemblies.net48/1.0.3/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",
-    "/root/.nuget/packages/speckle.navisworks.api/2027.0.0/speckle.navisworks.api.2027.0.0.nupkg.sha512"
+    "C:\\Users\\minio\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\minio\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net48\\1.0.3\\microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",
+    "C:\\Users\\minio\\.nuget\\packages\\speckle.navisworks.api\\2025.0.0\\speckle.navisworks.api.2025.0.0.nupkg.sha512"
   ],
   "logs": []
 }

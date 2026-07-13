@@ -14,20 +14,14 @@
           "build/Microsoft.NETFramework.ReferenceAssemblies.net48.targets": {}
         }
       },
-      "Speckle.Navisworks.API/2027.0.0": {
+      "Speckle.Navisworks.API/2025.0.0": {
         "type": "package",
         "compile": {
           "lib/net48/AdWindows.dll": {},
-          "lib/net48/Autodesk.Navisworks.Api.dll": {
-            "related": ".xml"
-          },
+          "lib/net48/Autodesk.Navisworks.Api.dll": {},
           "lib/net48/Autodesk.Navisworks.Clash.dll": {},
-          "lib/net48/Autodesk.Navisworks.ComApi.dll": {
-            "related": ".xml"
-          },
-          "lib/net48/Autodesk.Navisworks.Controls.dll": {
-            "related": ".xml"
-          },
+          "lib/net48/Autodesk.Navisworks.ComApi.dll": {},
+          "lib/net48/Autodesk.Navisworks.Controls.dll": {},
           "lib/net48/Autodesk.Navisworks.Interop.ComApi.dll": {},
           "lib/net48/navisworks.gui.common.dll": {},
           "lib/net48/navisworks.gui.interface.dll": {},
@@ -431,27 +425,24 @@
         "microsoft.netframework.referenceassemblies.net48.nuspec"
       ]
     },
-    "Speckle.Navisworks.API/2027.0.0": {
-      "sha512": "mU8hYv373sqonV+38eZK5Kc8yVa9M6dKdlrU8zMlt86r2LCSCTlFBO05NTqjju77xqQqk4VRvf2WVp7kzxBFEA==",
+    "Speckle.Navisworks.API/2025.0.0": {
+      "sha512": "+q2IObnUGqtC1O/ddy2p0HKm1eXRo7Yi80oD9VIWClidvGb3rVsXKZWBHiv4HwSn5JcOMSEt1cdSlRQLm8Ehjg==",
       "type": "package",
-      "path": "speckle.navisworks.api/2027.0.0",
+      "path": "speckle.navisworks.api/2025.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/net48/AdWindows.dll",
         "lib/net48/Autodesk.Navisworks.Api.dll",
-        "lib/net48/Autodesk.Navisworks.Api.xml",
         "lib/net48/Autodesk.Navisworks.Clash.dll",
         "lib/net48/Autodesk.Navisworks.ComApi.dll",
-        "lib/net48/Autodesk.Navisworks.ComApi.xml",
         "lib/net48/Autodesk.Navisworks.Controls.dll",
-        "lib/net48/Autodesk.Navisworks.Controls.xml",
         "lib/net48/Autodesk.Navisworks.Interop.ComApi.dll",
         "lib/net48/navisworks.gui.common.dll",
         "lib/net48/navisworks.gui.interface.dll",
         "lib/net48/navisworks.gui.roamer.dll",
         "logo.png",
-        "speckle.navisworks.api.2027.0.0.nupkg.sha512",
+        "speckle.navisworks.api.2025.0.0.nupkg.sha512",
         "speckle.navisworks.api.nuspec"
       ]
     }
@@ -459,23 +450,23 @@
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.8": [
       "Microsoft.NETFramework.ReferenceAssemblies >= 1.0.3",
-      "Speckle.Navisworks.API >= 2027.0.0"
+      "Speckle.Navisworks.API >= 2025.0.0"
     ]
   },
   "packageFolders": {
-    "/root/.nuget/packages/": {}
+    "C:\\Users\\minio\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
+      "projectUniqueName": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj",
       "projectName": "AutoNAVMCP",
-      "projectPath": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
-      "packagesPath": "/root/.nuget/packages/",
-      "outputPath": "/home/user/AutoNAV_beta/plugin/obj/",
+      "projectPath": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj",
+      "packagesPath": "C:\\Users\\minio\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/root/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\minio\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net48"
@@ -513,10 +504,10 @@
             "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
             "target": "Package",
-            "version": "[2027.0.0, )"
+            "version": "[2025.0.0, )"
           }
         },
-        "runtimeIdentifierGraphPath": "/tmp/claude-0/-home-user/aa7cf0d6-bc5c-5bff-ac9e-50aa29d5d605/scratchpad/dotnet/sdk/8.0.422/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.422\\RuntimeIdentifierGraph.json"
       }
     }
   }

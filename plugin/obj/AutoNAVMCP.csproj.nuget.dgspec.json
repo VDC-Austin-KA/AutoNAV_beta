@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj": {}
+    "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj": {}
   },
   "projects": {
-    "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj": {
+    "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
+        "projectUniqueName": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj",
         "projectName": "AutoNAVMCP",
-        "projectPath": "/home/user/AutoNAV_beta/plugin/AutoNAVMCP.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/home/user/AutoNAV_beta/plugin/obj/",
+        "projectPath": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\AutoNAVMCP.csproj",
+        "packagesPath": "C:\\Users\\minio\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\minio\\OneDrive\\Documents\\Github\\Repos\\AutoNAV_beta\\plugin\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\minio\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net48"
@@ -52,10 +52,10 @@
               "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[2027.0.0, )"
+              "version": "[2025.0.0, )"
             }
           },
-          "runtimeIdentifierGraphPath": "/tmp/claude-0/-home-user/aa7cf0d6-bc5c-5bff-ac9e-50aa29d5d605/scratchpad/dotnet/sdk/8.0.422/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.422\\RuntimeIdentifierGraph.json"
         }
       }
     }
