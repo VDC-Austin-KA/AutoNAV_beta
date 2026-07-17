@@ -33,21 +33,27 @@ The AI never touches your model directly — every operation goes through the of
 
 ### 1. Plugin
 
-Build (or download from the Actions artifacts) the DLL for your Navisworks year:
+**Easiest — use the prebuilt installer.** Prebuilt DLLs for all four Navisworks years plus an installer live in [`plugin/dist/`](plugin/dist/). In an **elevated** PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File plugin\dist\Install-AutoNAVMCP.ps1
+```
+
+It detects each installed Navisworks Manage 2024–2027, copies the **matching year's** DLL to `…\Plugins\AutoNAVMCP\AutoNAVMCP.dll`, and **unblocks** it (Windows blocks copied assemblies, and Navisworks silently refuses to load a blocked one — the #1 reason the button never appears). Then restart Navisworks → **Add-Ins** tab → **AutoNAV MCP**.
+
+See [`plugin/dist/README.md`](plugin/dist/README.md) for manual install and a **"button not showing" troubleshooting checklist**.
+
+**Build from source instead** (optional):
 
 ```
 dotnet build plugin/AutoNAVMCP.csproj -c Release -p:Platform=x64 -p:NWYear=2026 -p:NWPackageVersion=2026.0.1
 ```
 
-Supported pairs: `2024 / 2024.0.0`, `2025 / 2025.0.0`, `2026 / 2026.0.1`, `2027 / 2027.0.0`. No Navisworks SDK needed — it builds against the `Speckle.Navisworks.API` NuGet packages (same approach as AutoNAV2).
-
-Then copy `AutoNAVMCP.dll` to (admin rights required):
-
-```
-C:\Program Files\Autodesk\Navisworks Manage <year>\Plugins\AutoNAVMCP\AutoNAVMCP.dll
-```
+Supported pairs: `2024 / 2024.0.0`, `2025 / 2025.0.0`, `2026 / 2026.0.1`, `2027 / 2027.0.0`. No Navisworks SDK needed — it builds against the `Speckle.Navisworks.API` NuGet packages (same approach as AutoNAV2). Copy the resulting `AutoNAVMCP.dll` into `…\Plugins\AutoNAVMCP\`, **unblock it**, and use the DLL built for **your** Navisworks year (a mismatched-year DLL loads silently-not-at-all).
 
 Restart Navisworks → **Add-Ins ribbon tab** → click **AutoNAV MCP** → the bridge starts on `127.0.0.1:5711` (override with the `AUTONAV_MCP_PORT` environment variable). Click again to stop.
+
+> **Requires Navisworks _Manage_** (not Freedom/Simulate) — Clash Detective and .NET plugins are Manage-only.
 
 ### 2. MCP server
 
